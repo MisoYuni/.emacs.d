@@ -2,16 +2,20 @@
 #+CREATOR: Remi Kim
 #+LANGUAGE: en
 
+Originally forked from daedreth/UncleDavesEmacs repository.
+
+* Basic Settings
+
+** Appearance
+
+*** Theme
+
 #+BEGIN_SRC emacs-lisp
   (use-package gruvbox-theme
     :ensure t
     :init
       (load-theme 'gruvbox-dark-hard t))
 #+END_SRC
-
-* Basic Settings
-
-** Appearance
 
 *** Set visibility of menus and scrollbars
 
@@ -80,36 +84,43 @@
   ;;           '("a" "s" "d" "f" "j" "k" "l" "i" "o"))
   ;;   :bind
   ;;     ([remap other-window] . switch-window))
-  (require 'switch-window)
-  (global-set-key (kbd "C-x o") 'switch-window)
-  (global-set-key (kbd "C-x 1") 'switch-window-then-maximize)
-  (global-set-key (kbd "C-x 2") 'switch-window-then-split-below)
-  (global-set-key (kbd "C-x 3") 'switch-window-then-split-right)
-  (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
+  (use-package switch-window
+    :ensure t
+    :bind
+      (("C-x o" . switch-window)
+       ("C-x 1" . switch-window-then-maximize)
+       ("C-x 2" . switch-window-then-split-below)
+       ("C-x 3" . switch-window-then-split-right)
+       ("C-x 0" . switch-window-then-delete)
 
-  (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
-  (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
-  (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
-  (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
+       ("C-x 4 d" . switch-window-then-dired)
+       ("C-x 4 f" . switch-window-then-maximize)
+       ("C-x 4 m" . switch-window-then-compose-mail)
+       ("C-x 4 r" . switch-window-then-find-file-read-only)
 
-  (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
-  (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+       ("C-x 4 C-f" . switch-window-then-find-file)
+       ("C-x 4 C-o" . switch-window-then-display-buffer)
 
-  (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+       ("C-x 4 0" . switch-window-then-kill-buffer)))
 
   (global-set-key (kbd "C-c <left>")  'windmove-left)
   (global-set-key (kbd "C-c <right>") 'windmove-right)
   (global-set-key (kbd "C-c <up>")    'windmove-up)
   (global-set-key (kbd "C-c <down>")  'windmove-down)
 
-  (require 'buffer-move)
-  (global-set-key (kbd "C-c m <up>")    'buf-move-up)
-  (global-set-key (kbd "C-c m <down>")  'buf-move-down)
-  (global-set-key (kbd "C-c m <left>")  'buf-move-left)
-  (global-set-key (kbd "C-c m <right>") 'buf-move-right)
+  (use-package buffer-move
+    :ensure t
+    :bind
+      (("C-c m <up>"    . buf-move-up)
+       ("C-c m <down> " . buf-move-down)
+       ("C-c m <left>"  . buf-move-left)
+       ("C-c m <right>" . buf-move-right)))
 
-  (require 'transpose-frame)
-  (global-set-key (kbd "C-c t") 'transpose-frame)
+
+  (use-package transpose-frame
+    :ensure t
+    :bind
+      ("C-c t" . transpose-frame))
 #+END_SRC
 
 *** Auto dim other buffers
@@ -125,16 +136,19 @@
 ** Minibuffer
 
 #+BEGIN_SRC emacs-lisp
-  (require 'counsel)
-  (setq ivy-wrap t
-        ivy-re-builders-alist '((t . ivy--regex-fuzzy))
-        ivy-use-selectable-prompt t)
-
-  (define-key ivy-switch-buffer-map "C-j" 'ivy-next-line)
-  (define-key ivy-switch-buffer-map "C-k" 'ivy-previous-line)
-  (define-key ivy-minibuffer-map "C-j" 'ivy-next-line)
-  (define-key ivy-minibuffer-map "C-k" 'ivy-previous-line)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (use-package counsel
+    :ensure t
+    :init
+      (setq ivy-wrap t
+	    ivy-re-builders-alist '((t . ivy--regex-fuzzy))
+	    ivy-use-selectable-prompt t)
+    :bind (("M-x" . counsel-M-x)
+           :map ivy-switch-buffer-map
+	   ("C-j" . ivy-next-line)
+	   ("C-k" . ivy-previous-line)
+	   :map ivy-minibuffer-map
+	   ("C-j" . ivy-next-line)
+	   ("C-k" . ivy-previous-line)))
 #+END_SRC
 
 * Minor conveniences
@@ -204,6 +218,18 @@
 
 * Programming
 
+** magit
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :config
+      (setq magit-push-always-verify nil)
+      (setq git-commit-summary-max-length 50)
+    :bind
+      ("M-g" . magit-status))
+#+END_SRC
+
 ** yasnippet
 
 #+BEGIN_SRC emacs-lisp
@@ -226,14 +252,49 @@
   (use-package company
    :ensure t
    :config
-   (setq company-idle-delay 0)
-   (setq company-minimum-prefix-length 3))
+     (setq company-idle-delay 0)
+     (setq company-minimum-prefix-length 3))
 
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "SPC") #'company-abort))
 #+END_SRC
 
 ** language specific config
+
+*** C/C++
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c++-mode-hook 'yas-minor-mode)
+  (add-hook 'c-mode-hook 'yas-minor-mode)
+
+  (use-package flycheck-clang-analyzer
+    :ensure t
+    :config
+      (with-eval-after-load 'flycheck
+        (require 'flycheck-clang-analyzer)
+          (flycheck-clang-analyzer-setup)))
+
+  (with-eval-after-load 'company
+    (add-hook 'c++-mode-hook 'company-mode)
+    (add-hook 'c-mode-hook 'company-mode))
+
+  (use-package company-c-headers
+    :ensure t)
+
+  (use-package company-irony
+    :ensure t
+    :config
+      (setq company-backends '((company-c-headers
+                            company-dabbrev-code
+                            company-irony))))
+
+  (use-package irony
+    :ensure t
+    :config
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+#+END_SRC
 
 *** emacs-lisp
 
@@ -254,3 +315,24 @@
       (require 'company)
       (slime-setup '(slime-fancy slime-company)))
 #+END_SRC
+
+* Org
+
+** Common settings
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-ellipsis " ")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-with-smart-quotes t)
+  (setq org-src-window-setup 'current-window)
+  (add-hook 'org-mode-hook 'org-indent-mode)
+#+END_SRC
+** emacs-lisp template
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-structure-template-alist
+	         '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+#+END_SRC
+
