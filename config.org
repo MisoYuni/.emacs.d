@@ -1,0 +1,256 @@
+#+TITLE: Personal Emacs Settings
+#+CREATOR: Remi Kim
+#+LANGUAGE: en
+
+#+BEGIN_SRC emacs-lisp
+  (use-package gruvbox-theme
+    :ensure t
+    :init
+      (load-theme 'gruvbox-dark-hard t))
+#+END_SRC
+
+* Basic Settings
+
+** Appearance
+
+*** Set visibility of menus and scrollbars
+
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode   -1)
+  (menu-bar-mode    1)
+#+END_SRC
+
+*** Set UTF-8 encoding
+
+#+BEGIN_SRC emacs-lisp
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+#+END_SRC
+
+** Functionality
+
+*** Change yes-or-no questions into y-or-n questions
+
+#+BEGIN_SRC emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+*** Async
+
+#+BEGIN_SRC emacs-lisp
+  (use-package async
+    :ensure t
+    :init (dired-async-mode 1))
+#+END_SRC
+
+* Control
+
+** Ivy
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :ensure t)
+#+END_SRC
+
+** which-key
+
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+      (which-key-mode))
+#+END_SRC
+
+** Windows
+
+*** switch window
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package switch-window
+  ;;   :ensure t
+  ;;   :config
+  ;;     (setq switch-window-input-style 'minibuffer)
+  ;;     (setq switch-window-increase 4)
+  ;;     (setq switch-window-threshold 2)
+  ;;     (setq switch-window-shortcut-style 'qwerty)
+  ;;     (setq switch-window-qwerty-shortcuts
+  ;;           '("a" "s" "d" "f" "j" "k" "l" "i" "o"))
+  ;;   :bind
+  ;;     ([remap other-window] . switch-window))
+  (require 'switch-window)
+  (global-set-key (kbd "C-x o") 'switch-window)
+  (global-set-key (kbd "C-x 1") 'switch-window-then-maximize)
+  (global-set-key (kbd "C-x 2") 'switch-window-then-split-below)
+  (global-set-key (kbd "C-x 3") 'switch-window-then-split-right)
+  (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
+
+  (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
+  (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
+  (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
+  (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
+
+  (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
+  (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+
+  (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+
+  (global-set-key (kbd "C-c <left>")  'windmove-left)
+  (global-set-key (kbd "C-c <right>") 'windmove-right)
+  (global-set-key (kbd "C-c <up>")    'windmove-up)
+  (global-set-key (kbd "C-c <down>")  'windmove-down)
+
+  (require 'buffer-move)
+  (global-set-key (kbd "C-c m <up>")    'buf-move-up)
+  (global-set-key (kbd "C-c m <down>")  'buf-move-down)
+  (global-set-key (kbd "C-c m <left>")  'buf-move-left)
+  (global-set-key (kbd "C-c m <right>") 'buf-move-right)
+
+  (require 'transpose-frame)
+  (global-set-key (kbd "C-c t") 'transpose-frame)
+#+END_SRC
+
+*** Auto dim other buffers
+
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-dim-other-buffers)
+    :init
+      (add-hook 'after-init-hook (lambda ()
+        (when (fboundp 'auto-dim-other-buffers-mode)
+          (auto-dim-other-buffers-mode t))))
+#+END_SRC
+
+** Minibuffer
+
+#+BEGIN_SRC emacs-lisp
+  (require 'counsel)
+  (setq ivy-wrap t
+        ivy-re-builders-alist '((t . ivy--regex-fuzzy))
+        ivy-use-selectable-prompt t)
+
+  (define-key ivy-switch-buffer-map "C-j" 'ivy-next-line)
+  (define-key ivy-switch-buffer-map "C-k" 'ivy-previous-line)
+  (define-key ivy-minibuffer-map "C-j" 'ivy-next-line)
+  (define-key ivy-minibuffer-map "C-k" 'ivy-previous-line)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+#+END_SRC
+
+* Minor conveniences
+
+** Visit the configuration file
+
+#+BEGIN_SRC emacs-lisp
+  (defun config-visit ()
+    (interactive)
+    (find-file "~/.emacs.d/config.org"))
+  (global-set-key (kbd "C-c e") 'config-visit)
+#+END_SRC
+
+** Reload the configuration file
+
+#+BEGIN_SRC emacs-lisp
+  (defun config-reload ()
+    "Reloads ~/.emacs.d/config.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+
+** Electric
+
+#+BEGIN_SRC emacs-lisp
+  (setq electric-pair-pairs '(
+			     (?\{ . ?\})
+			     (?\( . ?\))
+			     (?\[ . ?\])
+			     (?\" . ?\")
+			     ))
+  (electric-pair-mode t)
+#+END_SRC
+
+** Beacon
+
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :config
+      (beacon-mode 1))
+#+END_SRC
+
+** Show parens
+
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode 1)
+#+END_SRC
+
+** Rainbow delimiters
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :init
+      (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+END_SRC
+
+** Expand region
+
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :bind ("C-q" . er/expand-region))
+#+END_SRC
+
+* Programming
+
+** yasnippet
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :config
+      (use-package yasnippet-snippets
+	:ensure t)
+      (yas-reload-all))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t)
+#+END_SRC
+
+** company-mode
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+   :ensure t
+   :config
+   (setq company-idle-delay 0)
+   (setq company-minimum-prefix-length 3))
+
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "SPC") #'company-abort))
+#+END_SRC
+
+** language specific config
+
+*** emacs-lisp
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+  (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
+  (add-hook 'emacs-lisp-mode-hook 'company-mode)
+
+  (use-package slime
+    :ensure t
+    :config
+    (setq inferior-lisp-program "/usr/local/bin/sbcl")
+    (setq slime-contribs '(slime-fancy)))
+
+  (use-package slime-company
+    :ensure t
+    :init
+      (require 'company)
+      (slime-setup '(slime-fancy slime-company)))
+#+END_SRC
