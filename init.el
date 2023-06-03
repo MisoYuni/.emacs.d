@@ -54,5 +54,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(company-c-headers irony flycheck-clang-analyzer switch-window which-key expand-region hungry-delete zzz-to-char transpose-frame auto-dim-other-buffers gruvbox-theme magit flycheck company smex counsel neotree buffer-move ivy undo-tree modus-themes))
+   '(org-bullets company-c-headers irony flycheck-clang-analyzer switch-window which-key expand-region hungry-delete zzz-to-char transpose-frame auto-dim-other-buffers gruvbox-theme magit flycheck company smex counsel neotree buffer-move ivy undo-tree modus-themes))
  '(warning-suppress-types '((comp))))

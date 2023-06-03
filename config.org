@@ -329,6 +329,24 @@ Originally forked from daedreth/UncleDavesEmacs repository.
   (setq org-src-window-setup 'current-window)
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
+
+** Line wrapping
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook
+            '(lambda ()
+               (visual-line-mode 1)))
+#+END_SRC
+
+** org-bullets
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+      (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+
 ** emacs-lisp template
 
 #+BEGIN_SRC emacs-lisp
